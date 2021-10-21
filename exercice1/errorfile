@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "proxy.py", line 62, in <module>
+    proxy(proxy_port=p_port, server_ip=a_ip, server_port=a_port)
+  File "proxy.py", line 20, in proxy
+    proxy_client_socket.connect((server_ip, server_port))
+ConnectionRefusedError: [Errno 111] Connection refused
