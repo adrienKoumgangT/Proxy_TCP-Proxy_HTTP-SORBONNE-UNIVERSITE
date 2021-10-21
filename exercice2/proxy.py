@@ -4,8 +4,6 @@ import utils
 
 
 clef_get = threading.Lock()
-clef_delete = threading.Lock()
-clef_post = threading.Lock()
 
 
 def handle_client(socket_server, socket_client):
@@ -16,7 +14,7 @@ def handle_client(socket_server, socket_client):
         if head[0] == "GET":
             while not clef_get.acquire(True):
                 pass
-        
+
         utils.send_message(socket_server, message_client)
         message_server = utils.receive_message(socket_server)
         utils.send_message(socket_client, message_server)
