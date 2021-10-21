@@ -2,8 +2,9 @@ import socket
 import utils
 import pathlib
 import datetime
+import os
 
-path_database = "./database/server"
+path_database = "./database/server/"
 
 
 def read_message(message):
@@ -22,7 +23,7 @@ def read_message(message):
         return {}
 
 
-def form_http_data(status, data):
+def form_http_data(data, status="My page"):
     r = f"""<!DOCTYPE>
 <html>
     <head>
@@ -34,6 +35,7 @@ def form_http_data(status, data):
 </html>"""
     return r
 
+
 def form_response(response):
     r = f"""{response["HTTP"]} {response["STATUS"]}
 Server: Python/3.8.10
@@ -41,7 +43,7 @@ Date: {response["DATE"]}
 Content-Type: {response["TYPE"]}
 Content-length: {response["LENGTH"]}
 
-{response["DATA"]}"""
+{form_http_data(response["DATA"])}"""
     return r
 
 
@@ -58,7 +60,9 @@ def search_file(filename):
 
 
 def handle_post(request):
-    return 9
+    d = pathlib.Path(path_database)
+    uri = request["URI"]
+    uri = uri.split("/")[-1]
 
 
 def handle_get(request):
@@ -75,7 +79,7 @@ def handle_get(request):
         except FileNotFoundError:
             print("Error during open file request")
     else:
-        response["STATUS"] = "ERROR 204"
+        response["STATUS"] = "ERROR 404"
         response["TYPE"] = "text"
         response["DATA"] = "File Not Found"
         response["LENGTH"] = str(len("File Not Found"))
@@ -84,7 +88,21 @@ def handle_get(request):
 
 
 def handle_delete(request):
-    return 9
+    file_request = search_file(request["URI"])
+    response = {"HTTP": request["HTTP"]}
+    if file_request:
+        response["STATUS"] = "200 OK"
+        response["TYPE"] = "text"
+        response["DATA"] = "File Delete"
+        response["LENGTH"] = str(len("File Delete"))
+        os.remove(file_request)
+    else:
+        response["STATUS"] = "ERROR 404"
+        response["TYPE"] = "text"
+        response["DATA"] = "File Not Found"
+        response["LENGTH"] = str(len("File Not Found"))
+    response["DATE"] = str(datetime.datetime.now())
+    return form_response(response)
 
 
 def server(server_port=1235):
