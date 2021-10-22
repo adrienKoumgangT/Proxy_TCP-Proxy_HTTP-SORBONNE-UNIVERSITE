@@ -14,7 +14,7 @@ def read_log_file(uri, typ="RESPONSE"):
     try:
         with open(path_database+log_file, "r") as f:
             pass
-            
+
     except FileNotFoundError as e:
         clef_log.release()
         print(e)
