@@ -2,6 +2,7 @@ import socket
 import threading
 import utils
 import sys
+import datetime
 
 path_database = "./database/proxy/"
 log_file = "log_file.txt"
@@ -32,7 +33,7 @@ def write_log_file(uri, owner, typ="REQUEST", data=""):
         clef_log.acquire()
     try:
         with open(path_database+log_file, "a") as f:
-            f.write(typ)
+            f.write(typ + " : " + str(datetime.datetime.now()))
             f.write(uri + ":" + str(owner)+"\n")
             if typ == "RESPONSE":
                 f.write(data+"\n")
@@ -54,16 +55,16 @@ def write_file(filename, content):
 
 def handle_client(socket_server, socket_client):
     message_client = utils.receive_message(socket_client)
-    while message_client.decode('utf-8') != "EXIT":
-        lm = message_client.split("\n")
+    while message_client.decode('utf-8').upper() != "EXIT":
+        lm = message_client.decode('utf-8').split("\n")
         head = lm[0].split(" ")
         if head[0] == "GET":
             uri = head[1].split("/")
             file_name = "-".join(uri)
-            write_log_file(file_name, socket_client, "REQUEST")
+            write_log_file(file_name, socket_client.getsockname(), "REQUEST")
             utils.send_message(socket_server, message_client)
             message_server = utils.receive_message(socket_server)
-            write_log_file(file_name, socket_client, typ="RESPONSE",
+            write_log_file(file_name, socket_client.getsockname(), typ="RESPONSE",
                            data=message_server.decode('utf-8'))
             utils.send_message(socket_client, message_server)
         else:
@@ -89,13 +90,14 @@ def proxy(proxy_port=1234, server_ip="127.0.0.1", server_port=1235):
 
 if __name__ == '__main__':
     if len(sys.argv) != 7:
-        print(f"options:"
-              f"\t-o, --proxy port_proxy : set address port of proxy"
-              f"\t-i, --ip ip_address : set address ip to connect"
-              f"\t-p, --port port_address : set address port to connect"
-              f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235"
-              f""
-              f"Notice: using default values : proxy=1234 ip=127.0.0.1 port=1235")
+        print(f"options:\n"
+              f"\t-o, --proxy port_proxy : set address port of proxy\n"
+              f"\t-i, --ip ip_address : set address ip to connect\n"
+              f"\t-p, --port port_address : set address port to connect\n"
+              f"\t-l, --log file_log : file to register history of request"
+              f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235\n"
+              f"\n"
+              f"Notice: using default values : proxy=1234 port=1235 ip=127.0.0.1\n")
         proxy()
     else:
         a_ip = ""
@@ -109,12 +111,12 @@ if __name__ == '__main__':
             elif sys.argv[i] in ['-o', '--proxy']:
                 p_port = int(sys.argv[i + 1])
             else:
-                print(f"options:"
-                      f"\t-o, --proxy port_proxy : set address port of proxy"
-                      f"\t-i, --ip ip_address : set address ip to connect"
-                      f"\t-p, --port port_address : set address port to connect"
-                      f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235"
-                      f""
-                      f"Notice: using default values : proxy=1234 ip=127.0.0.1 port=1235")
+                print(f"options:\n"
+                      f"\t-o, --proxy port_proxy : set address port of proxy\n"
+                      f"\t-i, --ip ip_address : set address ip to connect\n"
+                      f"\t-p, --port port_address : set address port to connect\n"
+                      f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235\n"
+                      f"\n"
+                      f"Notice: using default values : proxy=1234 port=1235 ip=127.0.0.1\n")
                 proxy()
         proxy(proxy_port=p_port, server_ip=a_ip, server_port=a_port)

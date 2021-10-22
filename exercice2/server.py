@@ -146,21 +146,21 @@ def server(server_port=1235):
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print(f"options:"
-              f"\t-p, --port port_address : set address port to connect"
-              f"\tusage: --port 1235"
-              f""
-              f"Notice: using default values : port=1235")
+        print(f"options:\n"
+              f"\t-p, --port port_address : set address port to connect\n"
+              f"\tusage: --port 1235\n"
+              f"\n"
+              f"Notice: using default values : port=1235\n")
         server()
     else:
         port = 0
         if sys.argv[1] in ['-p', '--port']:
             port = int(sys.argv[2])
         else:
-            print(f"options:"
-                  f"\t-p, --port port_address : set address port to connect"
-                  f"\tusage: --port 1235"
-                  f""
-                  f"Notice: using default values : port=1235")
+            print(f"options:\n"
+                  f"\t-p, --port port_address : set address port to connect\n"
+                  f"\tusage: --port 1235\n"
+                  f"\n"
+                  f"Notice: using default values : port=1235\n")
             server()
         server(server_port=port)

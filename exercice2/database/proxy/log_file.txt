@@ -1,0 +1,17 @@
+REQUEST : 2021-10-22 16:11:12.116019database-client-abraham:('127.0.0.1', 1251)
+RESPONSE : 2021-10-22 16:11:12.116712database-client-abraham:('127.0.0.1', 1251)
+HTTP/1.1 ERROR 404
+Server: Python/3.8.10
+Date: 2021-10-22 16:11:12.116556
+Content-Type: text/html
+Content-length: 150
+
+<!DOCTYPE>
+<html>
+    <head>
+        <title>database-client-abraham</title>
+    <head>
+    <body>
+        <p>File Not Found</data>
+    </body>
+</html>

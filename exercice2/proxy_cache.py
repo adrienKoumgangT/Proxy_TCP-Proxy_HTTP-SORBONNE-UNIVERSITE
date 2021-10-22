@@ -24,7 +24,7 @@ def write_file(filename, content):
 
 def handle_client(socket_server, socket_client):
     message_client = utils.receive_message(socket_client)
-    while message_client.decode('utf-8') != "EXIT":
+    while message_client.decode('utf-8').upper() != "EXIT":
         lm = message_client.decode('utf-8').split("\n")
         head = lm[0].split(" ")
         if head[0] == "GET":
@@ -61,13 +61,13 @@ def proxy(proxy_port=1234, server_ip="127.0.0.1", server_port=1235):
 
 if __name__ == '__main__':
     if len(sys.argv) != 7:
-        print(f"options:"
-              f"\t-o, --proxy port_proxy : set address port of proxy"
-              f"\t-i, --ip ip_address : set address ip to connect"
-              f"\t-p, --port port_address : set address port to connect"
-              f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235"
-              f""
-              f"Notice: using default values : proxy=1234 ip=127.0.0.1 port=1235")
+        print(f"options:\n"
+              f"\t-o, --proxy port_proxy : set address port of proxy\n"
+              f"\t-i, --ip ip_address : set address ip to connect\n"
+              f"\t-p, --port port_address : set address port to connect\n"
+              f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235\n"
+              f"\n"
+              f"Notice: using default values : proxy=1234 ip=127.0.0.1 port=1235\n")
         proxy()
     else:
         a_ip = ""
@@ -81,12 +81,12 @@ if __name__ == '__main__':
             elif sys.argv[i] in ['-o', '--proxy']:
                 p_port = int(sys.argv[i + 1])
             else:
-                print(f"options:"
-                      f"\t-o, --proxy port_proxy : set address port of proxy"
-                      f"\t-i, --ip ip_address : set address ip to connect"
-                      f"\t-p, --port port_address : set address port to connect"
-                      f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235"
-                      f""
-                      f"Notice: using default values : proxy=1234 ip=127.0.0.1 port=1235")
+                print(f"options:\n"
+                      f"\t-o, --proxy port_proxy : set address port of proxy\n"
+                      f"\t-i, --ip ip_address : set address ip to connect\n"
+                      f"\t-p, --port port_address : set address port to connect\n"
+                      f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235\n"
+                      f"\n"
+                      f"Notice: using default values : proxy=1234 ip=127.0.0.1 port=1235\n")
                 proxy()
         proxy(proxy_port=p_port, server_ip=a_ip, server_port=a_port)
