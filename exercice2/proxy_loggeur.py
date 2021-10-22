@@ -4,84 +4,44 @@ import utils
 
 
 path_database = "./database/proxy/"
-log_request = "log_request.txt"
-log_response = "log_response.txt"
-clef_log_request = threading.Lock()
-clef_log_response = threading.Lock()
+log_file = "log_file.txt"
+clef_log = threading.Lock()
 
 
-def read_log_file(uri, typ="request"):
-    if typ == "request":
-        while not clef_log_request.locked():
-            clef_log_request.acquire()
-        try:
-            with open(path_database+log_request, "r") as f:
-                if f.readline() == uri:
-                    clef_log_request.release()
-                    return True
-        except FileNotFoundError as e:
-            clef_log_request.release()
-            print(e)
-        except RuntimeError as e:
-            print(e)
-        try:
-            clef_log_request.release()
-        except RuntimeError as e:
-            print(e)
-        return False
-    else:
-        while not clef_log_response.locked():
-            clef_log_response.acquire()
-        try:
-            with open(path_database+log_response, "r") as f:
-                if f.readline() == uri:
-                    clef_log_response.release()
-                    return True
-        except FileNotFoundError as e:
-            clef_log_response.release()
-            print(e)
-        except RuntimeError as e:
-            print(e)
-        try:
-            clef_log_response.release()
-        except RuntimeError as e:
-            print(e)
-        return False
-
-
-def write_log_file(uri, owner, typ="request"):
-    if typ == "request":
-        while not clef_log_request.locked():
-            clef_log_request.acquire()
-        try:
-            with open(path_database+log_request, "a") as f:
-                f.write(uri + ":" + str(owner))
-                clef_log_request.release()
-        except FileNotFoundError as e:
-            clef_log_request.release()
-            print(e)
-        except RuntimeError as e:
-            print(e)
-    else:
-        while not clef_log_response.locked():
-            clef_log_response.acquire()
-        try:
-            with open(path_database+log_response, "a") as f:
-                f.write(uri + ":" + str(owner))
-                clef_log_response.release()
-        except FileNotFoundError as e:
-            clef_log_response.release()
-            print(e)
-        except RuntimeError as e:
-            print(e)
-
-
-def search_file(filename, typ="request"):
+def read_log_file(uri, typ="RESPONSE"):
+    while not clef_log.locked():
+        clef_log.acquire()
     try:
-        with open(path_database+filename, "rb") as f:
-            return f.read()
-    except FileNotFoundError:
-        return b''
+        with open(path_database+log_file, "r") as f:
+            pass
+            
+    except FileNotFoundError as e:
+        clef_log.release()
+        print(e)
+    except RuntimeError as e:
+        print(e)
+    try:
+        clef_log.release()
+    except RuntimeError as e:
+        print(e)
+    return False
+
+
+def write_log_file(uri, owner, typ="REQUEST", data=""):
+    while not clef_log.locked():
+        clef_log.acquire()
+    try:
+        with open(path_database+log_file, "a") as f:
+            f.write(typ)
+            f.write(uri + ":" + str(owner)+"\n")
+            if typ == "RESPONSE":
+                f.write(data+"\n")
+            clef_log.release()
+    except FileNotFoundError as e:
+        clef_log.release()
+        print(e)
+    except RuntimeError as e:
+        print(e)
 
 
 def write_file(filename, content):
@@ -98,14 +58,15 @@ def handle_client(socket_server, socket_client):
         lm = message_client.split("\n")
         head = lm[0].split(" ")
         if head[0] == "GET":
-            while not clef_log_response.acquire(True):
+            while not clef_log.acquire(True):
                 pass
             uri = head[1].split("/")
             file_name = "-".join(uri)
-            write_log_file(file_name, socket_client, "request")
+            write_log_file(file_name, socket_client, "REQUEST")
             utils.send_message(socket_server, message_client)
             message_server = utils.receive_message(socket_server)
-            write_log_file(file_name, socket_client, "response")
+            write_log_file(file_name, socket_client, typ="RESPONSE",
+                           data=message_server.decode('utf-8'))
             utils.send_message(socket_client, message_server)
         else:
             utils.send_message(socket_server, message_client)
