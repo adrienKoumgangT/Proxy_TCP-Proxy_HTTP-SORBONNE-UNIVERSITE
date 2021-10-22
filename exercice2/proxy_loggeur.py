@@ -54,7 +54,7 @@ def write_file(filename, content):
 
 def handle_client(socket_server, socket_client):
     message_client = utils.receive_message(socket_client)
-    while message_client.decode('utf-8') != "exit":
+    while message_client.decode('utf-8') != "EXIT":
         lm = message_client.split("\n")
         head = lm[0].split(" ")
         if head[0] == "GET":

@@ -24,8 +24,8 @@ def write_file(filename, content):
 
 def handle_client(socket_server, socket_client):
     message_client = utils.receive_message(socket_client)
-    while message_client.decode('utf-8') != "exit":
-        lm = message_client.split("\n")
+    while message_client.decode('utf-8') != "EXIT":
+        lm = message_client.decode('utf-8').split("\n")
         head = lm[0].split(" ")
         if head[0] == "GET":
             uri = head[1].split("/")

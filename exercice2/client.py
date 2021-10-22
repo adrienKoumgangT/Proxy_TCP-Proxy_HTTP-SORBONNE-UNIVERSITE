@@ -7,7 +7,7 @@ def form_request(r):
     if r["REQUEST"] == "POST":
         re = f"""POST {r["URI"]} HTTP/1.1
 Type: {r["TYPE"]}
-Content-Length: {r["CONTENT_LENGTH"]}
+Content-Length: {r["CONTENT-LENGTH"]}
 
 {r["DATA"]}"""
         return re
@@ -31,7 +31,7 @@ def client(server_ip="127.0.0.1", server_port=1234):
             mt = input("Enter the method: ")
             mt = mt.upper()
         uri = input("Enter the uri: ")
-        re = {"REQUEST": mt, "URI": uri}
+        re = {"REQUEST": mt, "URI": uri, "TYPE": "text/html"}
         if mt == "POST":
             try:
                 with open(uri) as f:

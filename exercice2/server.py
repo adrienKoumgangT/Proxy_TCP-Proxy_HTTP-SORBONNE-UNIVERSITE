@@ -64,6 +64,8 @@ def search_file(filename):
 def handle_post(request):
     uri = request["URI"].split("/")
     name_file = "-".join(uri)
+    if "HTTP" not in request:
+        request["HTTP"] = "HTTP/1.1"
     with open(path_database+name_file, "wb") as f:
         f.write(request["DATA"].encode('utf-8'))
     response = {"HTTP": request["HTTP"], "STATUS": "200 OK",
@@ -78,6 +80,8 @@ def handle_get(request):
     filename = request["URI"].split("/")
     filename = "-".join(filename)
     file_request = search_file(filename)
+    if "HTTP" not in request:
+        request["HTTP"] = "HTTP/1.1"
     response = {"HTTP": request["HTTP"], "FILE": filename}
     if file_request:
         response["STATUS"] = "200 OK"
@@ -102,6 +106,8 @@ def handle_delete(request):
     filename = request["URI"].split("/")
     filename = "-".join(filename)
     file_request = search_file(filename)
+    if "HTTP" not in request:
+        request["HTTP"] = "HTTP/1.1"
     response = {"HTTP": request["HTTP"], "FILE": filename}
     if file_request:
         response["STATUS"] = "200 OK"
