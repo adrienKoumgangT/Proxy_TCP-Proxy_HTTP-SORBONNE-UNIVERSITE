@@ -55,7 +55,8 @@ def handle_client(socket_server, socket_client):
     socket_client.close()
 
 
-def proxy(proxy_port=1234, server_ip="127.0.0.1", server_port=1235):
+def proxy(proxy_port=1234, server_ip="127.0.0.1", server_port=1235, file_log="file_log.txt"):
+    read_file(file_log)
     proxy_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     proxy_client_socket.connect((server_ip, server_port))
     proxy_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -74,14 +75,16 @@ if __name__ == '__main__':
               f"\t-o, --proxy port_proxy : set address port of proxy\n"
               f"\t-i, --ip ip_address : set address ip to connect\n"
               f"\t-p, --port port_address : set address port to connect\n"
-              f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235\n"
+              f"\t-l, --log file_log : set file for bad uri\n"
+              f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235 --log file_log\n"
               f"\n"
-              f"Notice: using default values : proxy=1234 port=1235 ip=127.0.0.1\n")
+              f"Notice: using default values : proxy=1234 port=1235 ip=127.0.0.1 file_log=log_file.txt\n")
         proxy()
     else:
         a_ip = ""
         a_port = 0
         p_port = 0
+        f_censeur = ""
         for i in range(1, 5, 2):
             if sys.argv[i] in ['-i', '--ip']:
                 a_ip = sys.argv[i + 1]
@@ -89,13 +92,16 @@ if __name__ == '__main__':
                 a_port = int(sys.argv[i + 1])
             elif sys.argv[i] in ['-o', '--proxy']:
                 p_port = int(sys.argv[i + 1])
+            elif sys.argv[i] in ['-l', '--log']:
+                f_censeur = sys.argv[i+1]
             else:
                 print(f"options:\n"
                       f"\t-o, --proxy port_proxy : set address port of proxy\n"
                       f"\t-i, --ip ip_address : set address ip to connect\n"
                       f"\t-p, --port port_address : set address port to connect\n"
-                      f"\tusage: --proxy 1234 --port 1235 --ip 127.0.0.1\n"
+                      f"\t-l, --log file_log : set file for bad uri\n"
+                      f"\tusage: --proxy 1234 --port 1235 --ip 127.0.0.1 --log file_log\n"
                       f"\n"
-                      f"Notice: using default values : proxy=1234 ip=127.0.0.1 port=1235\n")
+                      f"Notice: using default values : proxy=1234 ip=127.0.0.1 port=1235 file_log=log_file.txt\n")
                 proxy()
-        proxy(proxy_port=p_port, server_ip=a_ip, server_port=a_port)
+        proxy(proxy_port=p_port, server_ip=a_ip, server_port=a_port, file_log=f_censeur)

@@ -21,12 +21,12 @@ def client(server_ip="127.0.0.1", server_port=1234):
 
 if __name__ == '__main__':
     if len(sys.argv) != 5:
-        print(f"options:"
-              f"\t-i, --ip ip_address : set address ip to connect"
-              f"\t-p, --port port_address : set address port to connect"
-              f"\tusage: --ip 127.0.0.1 --port 1234"
-              f""
-              f"Notice: using default values : ip=127.0.0.1 port=1234")
+        print(f"options:\n"
+              f"\t-i, --ip ip_address : set address ip to connect\n"
+              f"\t-p, --port port_address : set address port to connect\n"
+              f"\tusage: --ip 127.0.0.1 --port 1234\n"
+              f"\n"
+              f"Notice: using default values : ip=127.0.0.1 port=1234\n")
         client()
     else:
         a_ip = ""
@@ -37,11 +37,11 @@ if __name__ == '__main__':
             elif sys.argv[i] in ['-p', '--port']:
                 a_port = int(sys.argv[i + 1])
             else:
-                print(f"options:"
-                      f"\t-i, --ip ip_address : set address ip to connect"
-                      f"\t-p, --port port_address : set address port to connect"
-                      f"\tusage: --ip 127.0.0.1 --port 1234"
-                      f""
-                      f"Notice: using default values : ip=127.0.0.1 port=1234")
+                print(f"options:\n"
+                      f"\t-i, --ip ip_address : set address ip to connect\n"
+                      f"\t-p, --port port_address : set address port to connect\n"
+                      f"\tusage: --ip 127.0.0.1 --port 1234\n"
+                      f"\n"
+                      f"Notice: using default values : ip=127.0.0.1 port=1234\n")
                 client()
         client(server_ip=a_ip, server_port=a_port)
