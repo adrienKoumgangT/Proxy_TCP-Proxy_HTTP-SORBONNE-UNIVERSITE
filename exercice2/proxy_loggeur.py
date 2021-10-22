@@ -1,7 +1,7 @@
 import socket
 import threading
 import utils
-
+import sys
 
 path_database = "./database/proxy/"
 log_file = "log_file.txt"
@@ -58,8 +58,6 @@ def handle_client(socket_server, socket_client):
         lm = message_client.split("\n")
         head = lm[0].split(" ")
         if head[0] == "GET":
-            while not clef_log.acquire(True):
-                pass
             uri = head[1].split("/")
             file_name = "-".join(uri)
             write_log_file(file_name, socket_client, "REQUEST")
@@ -90,4 +88,33 @@ def proxy(proxy_port=1234, server_ip="127.0.0.1", server_port=1235):
 
 
 if __name__ == '__main__':
-    proxy()
+    if len(sys.argv) != 7:
+        print(f"options:"
+              f"\t-o, --proxy port_proxy : set address port of proxy"
+              f"\t-i, --ip ip_address : set address ip to connect"
+              f"\t-p, --port port_address : set address port to connect"
+              f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235"
+              f""
+              f"Notice: using default values : proxy=1234 ip=127.0.0.1 port=1235")
+        proxy()
+    else:
+        a_ip = ""
+        a_port = 0
+        p_port = 0
+        for i in range(1, 5, 2):
+            if sys.argv[i] in ['-i', '--ip']:
+                a_ip = sys.argv[i + 1]
+            elif sys.argv[i] in ['-p', '--port']:
+                a_port = int(sys.argv[i + 1])
+            elif sys.argv[i] in ['-o', '--proxy']:
+                p_port = int(sys.argv[i + 1])
+            else:
+                print(f"options:"
+                      f"\t-o, --proxy port_proxy : set address port of proxy"
+                      f"\t-i, --ip ip_address : set address ip to connect"
+                      f"\t-p, --port port_address : set address port to connect"
+                      f"\tusage: --proxy 1234 --ip 127.0.0.1 --port 1235"
+                      f""
+                      f"Notice: using default values : proxy=1234 ip=127.0.0.1 port=1235")
+                proxy()
+        proxy(proxy_port=p_port, server_ip=a_ip, server_port=a_port)

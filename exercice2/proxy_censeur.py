@@ -3,23 +3,35 @@ import threading
 import utils
 import sys
 
-path_database = "./database/proxy/"
+list_of_bad_uri = []
 
 
-def search_file(filename):
+def read_file(file_name):
     try:
-        with open(path_database+filename, "rb") as f:
-            return f.read()
-    except FileNotFoundError:
-        return b''
-
-
-def write_file(filename, content):
-    try:
-        with open(path_database+filename, "wb") as f:
-            f.write(content)
+        with open(file_name, "w") as f:
+            list_of_bad_uri.append(f.readline())
     except FileNotFoundError as e:
         print(e)
+        exit()
+
+
+def get_bad_message():
+    r = f"""HTTP/1.0 404 ERROR
+Server: Python/3.8.10
+Date: Now
+Content-Type: text/html
+Content-length: 127
+
+<!DOCTYPE>
+<html>
+    <head>
+        <title>Error</title>
+    </head>
+    <body>
+        <h1>Interdit</h1>
+    </body>
+</html>"""
+    return r
 
 
 def handle_client(socket_server, socket_client):
@@ -29,15 +41,12 @@ def handle_client(socket_server, socket_client):
         head = lm[0].split(" ")
         if head[0] == "GET":
             uri = head[1].split("/")
-            file_name = "-".join(uri)
-            content = search_file(file_name)
-            if content:
-                utils.send_message(socket_client, content)
-            else:
+            if uri not in list_of_bad_uri:
                 utils.send_message(socket_server, message_client)
                 message_server = utils.receive_message(socket_server)
-                write_file(file_name, message_server)
-                utils.send_message(socket_client, message_server)
+            else:
+                message_server = get_bad_message()
+            utils.send_message(socket_client, message_server)
         else:
             utils.send_message(socket_server, message_client)
             message_server = utils.receive_message(socket_server)
