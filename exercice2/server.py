@@ -23,11 +23,11 @@ def read_message(message):
         return {}
 
 
-def form_http_data(data, status="My page"):
+def form_http_data(data, title="index"):
     r = f"""<!DOCTYPE>
 <html>
     <head>
-        <title>{status}</title>
+        <title>{title}</title>
     <head>
     <body>
         <p>{data}</data>
@@ -37,13 +37,14 @@ def form_http_data(data, status="My page"):
 
 
 def form_response(response):
+    fhd = form_http_data(response["DATA"], response["FILE"])
     r = f"""{response["HTTP"]} {response["STATUS"]}
 Server: Python/3.8.10
 Date: {response["DATE"]}
 Content-Type: {response["TYPE"]}
-Content-length: {response["LENGTH"]}
+Content-length: {len(fhd)}
 
-{form_http_data(response["DATA"])}"""
+{fhd}"""
     return r
 
 
@@ -60,17 +61,26 @@ def search_file(filename):
 
 
 def handle_post(request):
-    d = pathlib.Path(path_database)
-    uri = request["URI"]
-    uri = uri.split("/")[-1]
+    uri = request["URI"].split("/")
+    name_file = "-".join(uri)
+    with open(path_database+name_file, "wb") as f:
+        f.write(request["DATA"].encode('utf-8'))
+    response = {"HTTP": request["HTTP"], "STATUS": "200 OK",
+                "TYPE": "text/html", "FILE": name_file,
+                "DATA": "OPERATION SUCCESS",
+                "LENGTH": str(len("OPERATION SUCCESS")),
+                "DATE": str(datetime.datetime.now())}
+    return form_response(response)
 
 
 def handle_get(request):
-    file_request = search_file(request["URI"])
-    response = {"HTTP": request["HTTP"]}
+    filename = request["URI"].split("/")
+    filename = "-".join(filename)
+    file_request = search_file(filename)
+    response = {"HTTP": request["HTTP"], "FILE": filename}
     if file_request:
         response["STATUS"] = "200 OK"
-        response["TYPE"] = "text"
+        response["TYPE"] = "text/html"
         try:
             with open(file_request, "rb") as file:
                 content = file.read().decode('utf-8')
@@ -80,7 +90,7 @@ def handle_get(request):
             print("Error during open file request")
     else:
         response["STATUS"] = "ERROR 404"
-        response["TYPE"] = "text"
+        response["TYPE"] = "text/html"
         response["DATA"] = "File Not Found"
         response["LENGTH"] = str(len("File Not Found"))
     response["DATE"] = str(datetime.datetime.now())
@@ -88,8 +98,10 @@ def handle_get(request):
 
 
 def handle_delete(request):
-    file_request = search_file(request["URI"])
-    response = {"HTTP": request["HTTP"]}
+    filename = request["URI"].split("/")
+    filename = "-".join(filename)
+    file_request = search_file(filename)
+    response = {"HTTP": request["HTTP"], "FILE": filename}
     if file_request:
         response["STATUS"] = "200 OK"
         response["TYPE"] = "text"
